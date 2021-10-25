@@ -6,11 +6,12 @@ from setuptools import find_packages, setup
 with open("README.md") as f:
     readme = f.read()
 
+
 # write the package version
 def write_version():
     with open(os.path.join("cytoemd", "version.txt")) as f:
         version = f.read().strip()
-    
+
     with open(os.path.join("cytoemd", "version.py"), "w") as f:
         f.write('__version__ = "{}"'.format(version))
 

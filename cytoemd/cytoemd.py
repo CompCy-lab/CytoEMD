@@ -1,5 +1,8 @@
 from typing import Dict, Union, List
-from typing_extensions import Literal
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 from tqdm import tqdm
 from itertools import combinations
 from functools import partial
@@ -39,7 +42,7 @@ class CytoEMD(object):
         self.n_cpus = max(1, min(n_cpus, cores))
         self.use_fast = use_fast
         self.verbose = verbose
-    
+
     def _gen_pair_list(self, N, data_list):
         idx_list = list(range(N))
         return zip(combinations(idx_list, r=2), combinations(data_list, r=2))
@@ -53,7 +56,7 @@ class CytoEMD(object):
         # input check
         assert len(data_list) > 0, "only list can be used as input, please check the input data type"
         num_sample, num_marker = len(data_list), data_list[0].shape[1]
-        
+
         if hasattr(self, 'num_sample') and hasattr(self, 'num_marker'):
             if (self.num_sample != num_sample) or (self.num_marker != num_marker):
                 raise RuntimeError(
@@ -63,7 +66,7 @@ class CytoEMD(object):
         else:
             self.num_sample = num_sample
             self.num_marker = num_marker
-        
+
         # data type check
         if isinstance(data_list[0], ad.AnnData):
             assert all(
@@ -80,7 +83,7 @@ class CytoEMD(object):
         else:
             if not isinstance(data_list[0], np.ndarray):
                 raise NotImplementedError("We only supports nd.ndarray, anndata or pandas dataframe as input data.")
-        
+
         # compute the distance matrix
         distance_tensor = np.zeros((num_marker, num_sample, num_sample), dtype=dtype)
         bin_edges, min_flows = dict(), dict()
@@ -88,10 +91,10 @@ class CytoEMD(object):
 
         pool = multiprocessing.Pool(self.n_cpus)
         pair_distances = pool.imap(
-            partial(utils.compute_pair_emd, use_fast=self.use_fast, bins=self.bins), 
+            partial(utils.compute_pair_emd, use_fast=self.use_fast, bins=self.bins),
             self._gen_pair_list(num_sample, data_list)
         )
-        
+
         count = 0
         with tqdm(range(num_pairs)) as t:
             for (i, j, dis_vec), bg, mf in pair_distances:
@@ -111,11 +114,11 @@ class CytoEMD(object):
         if not self.use_fast:
             self.bin_edge = bin_edges
             self.min_flow = min_flows
-        
+
         # compute the distance matrix
         dis_fn = utils.get_distance_func(self.metric)
         self.distance_matrix = dis_fn(distance_tensor)
-    
+
     def distance_to_embed(self, dis_mtx, emd_type: str = 'UMAP', **kwargs):
         if emd_type == 'UMAP':
             embeddings = umap.UMAP(
@@ -132,7 +135,7 @@ class CytoEMD(object):
         else:
             raise ValueError(f"{self.emb_type} is unknown, please choose MDS or UMAP")
         return embeddings
-    
+
     def fit_transform(self, X, **kwargs):
         self.fit(X)
         # get the embeddings with MDS or UMAP
@@ -140,13 +143,13 @@ class CytoEMD(object):
                                             self.emd_type,
                                             **kwargs)
         return embeddings
-    
+
     def predict_prob(self, embedding, sample_labels, meld_kwargs: Dict = {}):
         # pred_densities = G_MELD(**meld_kwargs).fit_transform(self.distance_matrix, sample_labels)
         pred_densities = meld.MELD(**meld_kwargs).fit_transform(embedding, sample_labels)
         pred_prob = meld.utils.normalize_densities(pred_densities)
         return pred_prob
-    
+
     def rank_markers(
             self,
             X,
@@ -155,17 +158,17 @@ class CytoEMD(object):
             normalize_embed: bool = True,
             meld_kwargs: Dict = {},
             **kwargs
-        ):
+    ):
         if not hasattr(self, 'distance_matrix'):
             self.fit(X, **kwargs)
-        
+
         meld_model = meld.MELD(**meld_kwargs)
         entropy_score = []
 
         def _normalize_embed(x):
             scaler = preprocessing.StandardScaler().fit(x)
             return scaler.transform(x)
-        
+
         if eval_pair:
             marker_pair_list = []
             marker_list = self.markers if hasattr(self, 'markers') else range(self.num_marker)
@@ -188,5 +191,5 @@ class CytoEMD(object):
                 entropy_score.append(utils.embed_to_cross_entropy(meld_model, embedding, sample_labels))
             if hasattr(self, 'markers'):
                 entropy_score = dict(zip(self.markers, entropy_score))
-        
+
         return entropy_score

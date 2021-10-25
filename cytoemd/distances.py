@@ -10,7 +10,7 @@ def euclidean(dx):
     """Standard euclidean distance.
 
     ..math::
-        D(dx) = \sqrt{\sum_i (delta_x_i)^2} 
+        D(dx) = \sqrt{\sum_i (delta_x_i)^2}
     """
     return np.sqrt(np.sum(dx ** 2, axis=0))
 
@@ -74,24 +74,24 @@ def emd_samples(
     # Get the default range
     if range is None:
         range = (min(np.min(first_array), np.min(second_array)),
-                max(np.max(first_array), np.max(second_array)))
+                 max(np.max(first_array), np.max(second_array)))
     # Get bin edges using both arrays
     bins = get_bins(np.concatenate([first_array, second_array]),
                     range=range,
                     bins=bins)
     # Compute histograms
     first_histogram, bin_edges = np.histogram(first_array,
-                                            range=range,
-                                            bins=bins)
+                                              range=range,
+                                              bins=bins)
     second_histogram, _ = np.histogram(second_array,
-                                    range=range,
-                                    bins=bins)
+                                       range=range,
+                                       bins=bins)
     if normalized:
         first_histogram = first_histogram / np.sum(first_histogram)
         second_histogram = second_histogram / np.sum(second_histogram)
     # Compute the distance matrix between the center of each bin
     bin_locations = np.mean([bin_edges[:-1], bin_edges[1:]], axis=0)
-    
+
     if not use_fast:
         # Cast to C++ long
         first_histogram = first_histogram.astype(np.float64)
@@ -103,8 +103,7 @@ def emd_samples(
         if len(distance_matrix) != len(distance_matrix[0]):
             raise ValueError(
                 'Distance matrix must be square; check your `distance` function.')
-        if (first_histogram.shape[0] > len(distance_matrix) or
-            second_histogram.shape[0] > len(distance_matrix)):
+        if (first_histogram.shape[0] > len(distance_matrix) or second_histogram.shape[0] > len(distance_matrix)):
             raise ValueError(
                 'Distance matrix must have at least as many rows/columns as there '
                 'are bins in the histograms; check your `distance` function.')
@@ -113,9 +112,5 @@ def emd_samples(
                                                   distance_matrix)
         return emd_value, bin_edges, min_flow
     else:
-        return (scipy.stats.wasserstein_distance(bin_locations,
-                                                 bin_locations,
-                                                 first_histogram,
-                                                 second_histogram),
-                                                 None,
-                                                 None)
+        return (scipy.stats.wasserstein_distance(
+            bin_locations, bin_locations, first_histogram, second_histogram), None, None)

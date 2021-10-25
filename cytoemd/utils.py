@@ -1,6 +1,12 @@
 import meld
 import numpy as np
-from .distances import *
+from .distances import (
+    euclidean,
+    manhattan,
+    chebyshev,
+    minkowski,
+    emd_samples
+)
 from sklearn.neighbors import NearestNeighbors
 
 
@@ -8,11 +14,11 @@ def compute_pair_emd(input, use_fast, bins):
     i, j = input[0]
     mat1, mat2 = input[1]
     n_var = mat1.shape[1]
-    
+
     dis_vec = np.zeros((n_var,), dtype=mat1.dtype)
-    bin_edges, min_flows = [], [] 
+    bin_edges, min_flows = [], []
     for k in range(n_var):
-        dis_vec[k], be, mf = emd_samples(mat1[:,k], mat2[:,k], use_fast=use_fast, bins=bins)
+        dis_vec[k], be, mf = emd_samples(mat1[:, k], mat2[:, k], use_fast=use_fast, bins=bins)
         bin_edges.append(be)
         min_flows.append(mf)
     return (i, j, dis_vec), bin_edges, min_flows
