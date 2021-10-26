@@ -1,0 +1,7 @@
+[run]
+concurrency = multiprocessing
+parallel = true
+
+[report]
+show_missing = true
+omit = tests/*
