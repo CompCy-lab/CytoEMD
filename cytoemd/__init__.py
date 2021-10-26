@@ -1,2 +1,4 @@
 from .cytoemd import CytoEMD
-from .utils import knn_purity
+from . import distances
+
+__all__ = ["CytoEMD", "distances"]
