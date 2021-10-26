@@ -13,7 +13,7 @@ def write_version():
         version = f.read().strip()
 
     with open(os.path.join("cytoemd", "version.py"), "w") as f:
-        f.write('__version__ = "{}"'.format(version))
+        f.write('__version__ = "{}"\n'.format(version))
 
     return version
 
@@ -30,8 +30,7 @@ def do_setup():
         long_description=readme,
         python_requires='>=3.6',
         install_requires=[
-            'numpy<1.20.0; python_version<"3.7"',
-            'numpy; python_version>="3.7"',
+            "numpy",
             "pandas",
             "anndata",
             "umap-learn",
