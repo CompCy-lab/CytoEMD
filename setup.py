@@ -30,7 +30,9 @@ def do_setup():
         long_description=readme,
         python_requires='>=3.6',
         install_requires=[
-            "numpy",
+            "numpy >=1.9.0, <1.20.0; python_version<='3.6'",
+            "numpy >=1.9.0, <2.0.0; python_version>'3.6'",
+            "scipy",
             "pandas",
             "anndata",
             "umap-learn",
