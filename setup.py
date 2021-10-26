@@ -55,9 +55,9 @@ def do_setup():
         test_suite="tests",
         classifiers=[
             "Intended Audience :: Science/Research :: Computational Biology",
-            "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
             "Programming Language :: Python :: 3.8",
+            "Programming Language :: Python :: 3.9",
             "Topic :: Scientific/Engineering :: Computational Biology",
         ],
         zip_safe=False
