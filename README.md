@@ -15,9 +15,9 @@ pip install .
 
 ### Introduction
 
-CytoEMD is a Python package for representation learning of samples in mass or flow cytometry data. CytoEMD uses earth mover's distance (EMD) to quantify the distances between cytometry samples and learns the representation of each sample using common methods like `UMAP` or `MDS`. The work flow of CytoEMD is as follows:
+CytoEMD is a Python package for representation learning of samples in mass or flow cytometry data. CytoEMD uses earth mover's distance (EMD) to quantify the distances between cytometry samples and learns the representation of each sample using common methods like `UMAP` or `MDS`. The workflow of CytoEMD is as follows:
 
-<img src='./figure/cytoemd.png' width="900" alt='CytoEMD'>
+<img src='./figure/cytoemd.png' width="800" alt='CytoEMD'>
 
 
 ### Tutorial
